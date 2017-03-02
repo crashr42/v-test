@@ -39,6 +39,12 @@ class ShorterController extends Controller
             $shortUrl = route('short_path', ['hash' => $l->hash]);
         }
 
+        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+            return response()->json([
+                'url' => $shortUrl,
+            ]);
+        }
+
         return view('welcome', [
             'longUrl'  => $longUrl,
             'shortUrl' => $shortUrl,

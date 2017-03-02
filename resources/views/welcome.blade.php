@@ -10,6 +10,8 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
     <!-- Styles -->
     <style>
         html, body {
@@ -109,5 +111,38 @@
         </div>
     </div>
 </div>
+
+<script>
+    (function () {
+        $(function () {
+            var page = (function () {
+                return {
+                    result: $('#short-url'),
+                    long_url: $('input[name=long_url]'),
+                    form: $('.short-url-form')
+                };
+            })();
+
+            page.form.on('submit', function () {
+                var action = page.form.attr('action');
+                var url = action + '?long_url=' + encodeURIComponent(decodeURIComponent(page.long_url.val()));
+
+                $.getJSON(url, function (response) {
+                    var shortA = document.createElement("a");
+                    shortA.href = response.url;
+                    shortA.text = response.url;
+                    shortA.setAttribute('target', '_blank');
+
+                    page.result.innerHTML = '';
+                    page.result.html(shortA);
+                }, function () {
+                    alert('Url invalid!');
+                });
+
+                return false;
+            });
+        });
+    })();
+</script>
 </body>
 </html>
