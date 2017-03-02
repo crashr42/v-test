@@ -9,7 +9,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\LongUrlRequest;
 use App\Libs\UrlHasher;
 use App\LongUrl;
 use Illuminate\Contracts\View\Factory;
@@ -23,33 +22,53 @@ class ShorterController extends Controller
     /**
      * Generate short url link.
      *
-     * @param LongUrlRequest|Request $request
+     * @param Request $request
      * @return Factory|View
      */
-    public function long(LongUrlRequest $request)
+    public function long(Request $request)
     {
-        $longUrl  = \App\Libs\nullify($request->get('long_url'));
-        $shortUrl = null;
+        $longUrl  = \App\Libs\nullify($request->input('long_url'));
+        if (!UrlHasher::urlIsValid($longUrl)) {
+            $urlInvalidMsg = 'Url invalid.';
 
-        if ($longUrl !== null) {
-            $l           = new LongUrl();
-            $l->long_url = $longUrl;
-            $l->hash     = UrlHasher::generateHash();
-            $l->saveOrFail();
-
-            $shortUrl = route('short_path', ['hash' => $l->hash]);
+            if ($request->isXmlHttpRequest()) {
+                return response()->json(['error' => $urlInvalidMsg])->setStatusCode(422);
+            } else {
+                return view('welcome', compact('longUrl', 'shortUrl'))->withErrors(['message' => $urlInvalidMsg]);
+            }
         }
 
-        if ($request->headers->get('X-Requested-With') === 'XMLHttpRequest') {
+        $shortUrl = null;
+
+        if ($longUrl === null) {
+            return view('welcome', compact('longUrl', 'shortUrl'));
+        }
+
+        $hash = LongUrl::newHash();
+        if ($hash === false) {
+            $hashCollisionMsg = "Can't generate url. Try again later.";
+
+            if ($request->isXmlHttpRequest()) {
+                return response()->json(['error' => $hashCollisionMsg])->setStatusCode(422);
+            } else {
+                return view('welcome', compact('longUrl', 'shortUrl'))->withErrors(['message' => $hashCollisionMsg]);
+            }
+        }
+
+        $l           = new LongUrl();
+        $l->long_url = $longUrl;
+        $l->hash     = $hash;
+        $l->saveOrFail();
+
+        $shortUrl = route('short_path', ['hash' => $l->hash]);
+
+        if ($request->isXmlHttpRequest()) {
             return response()->json([
                 'url' => $shortUrl,
             ]);
         }
 
-        return view('welcome', [
-            'longUrl'  => $longUrl,
-            'shortUrl' => $shortUrl,
-        ]);
+        return view('welcome', compact('longUrl', 'shortUrl'));
     }
 
     /**
