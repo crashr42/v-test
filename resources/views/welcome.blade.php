@@ -67,11 +67,32 @@
         #short-url {
             margin: 20px 0;
         }
+
+        .alert {
+            padding: 20px 40px;
+            margin: 10px;
+        }
+
+        .alert-danger {
+            background-color: #ffaa5d;
+            color: #1f1f1f;
+            font-size: 20px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
 <div class="flex-center position-ref full-height">
     <div class="content">
+        @if ($errors->count() > 0)
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    {{ $error }}<br>
+                @endforeach
+            </div>
+        @endif
+
+
         <div class="title m-b-md">
             URL SHORTER
         </div>

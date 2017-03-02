@@ -12,6 +12,10 @@
 */
 
 Route::get('/', [
-    'uses' => 'ShorterController@index',
+    'uses' => 'ShorterController@long',
     'as'   => 'root_path',
 ]);
+Route::get('/{hash}', [
+    'uses' => 'ShorterController@short',
+    'as'   => 'short_path',
+])->where('hash', '[0-9a-zA-Z]{6,6}');
