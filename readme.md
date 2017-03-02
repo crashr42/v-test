@@ -23,7 +23,7 @@ Open http://0.0.0.0:8000;
 
 # Running
 
-Run `php artisan serve`.
+Run `bin/run`.
 
 # Tests
 
