@@ -94,7 +94,7 @@ class ShorterController extends Controller
             return redirect(route('root_path'))->withErrors(['message' => sprintf('Short url %s not found!', $request->url())]);
         }
 
-        return redirect($longUrl->long_url, 302, [
+        return redirect($longUrl->long_url, 301, [
             'Cache-Control' => 'no-cache, no-store, max-age=0, must-revalidate',
             'Expires'       => 'Mon, 01 Jan 1990 00:00:00 GMT',
         ]);
