@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\LongUrlRequest;
 use App\Libs\UrlHasher;
 use App\LongUrl;
 use Illuminate\Contracts\View\Factory;
@@ -22,10 +23,10 @@ class ShorterController extends Controller
     /**
      * Generate short url link.
      *
-     * @param Request $request
+     * @param LongUrlRequest|Request $request
      * @return Factory|View
      */
-    public function long(Request $request)
+    public function long(LongUrlRequest $request)
     {
         $longUrl  = \App\Libs\nullify($request->get('long_url'));
         $shortUrl = null;

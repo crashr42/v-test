@@ -125,9 +125,17 @@
 
             page.form.on('submit', function () {
                 var action = page.form.attr('action');
+                var long_url = page.long_url.val();
+                if (long_url === null || long_url === '' || long_url === undefined) {
+                    return false;
+                }
                 var url = action + '?long_url=' + encodeURIComponent(decodeURIComponent(page.long_url.val()));
 
                 $.getJSON(url, function (response) {
+                    if (response.url === null) {
+                        return;
+                    }
+
                     var shortA = document.createElement("a");
                     shortA.href = response.url;
                     shortA.text = response.url;
