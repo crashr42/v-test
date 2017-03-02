@@ -131,7 +131,8 @@
                 }
                 var url = action + '?long_url=' + encodeURIComponent(decodeURIComponent(page.long_url.val()));
 
-                $.getJSON(url, function (response) {
+                var req = $.getJSON(url);
+                req.done(function (response) {
                     if (response.url === null) {
                         return;
                     }
@@ -143,8 +144,9 @@
 
                     page.result.innerHTML = '';
                     page.result.html(shortA);
-                }, function () {
-                    alert('Url invalid!');
+                });
+                req.fail(function (response) {
+                    alert(response.responseJSON.error);
                 });
 
                 return false;
