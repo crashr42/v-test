@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -x
+
+docker stop n-test-db
+docker rm n-test-db
+docker run --name n-test-db -e MYSQL_ROOT_PASSWORD=qwe123 -d mariadb
+
+docker stop n-test
+docker rm n-test
+docker build -t=n-test --rm=true .
+docker run --link n-test-db --cpus=".8" -it -d --name n-test -p 8000:8000 -v `pwd`:/var/www/html n-test
+
+docker logs -f n-test
